@@ -12,7 +12,7 @@ import HomeScreen from './pages/Home';
 
 import DetailsScreen from './pages/Details';
 
-import Center from './pages/Center/Center';
+import CharacterSheet from './pages/CharacterSheet/CharacterSheet';
 
 const Stack = createStackNavigator();
 
@@ -34,8 +34,8 @@ const App = () => {
         />
         <Stack.Screen name="Details" component={DetailsScreen} />
         <Stack.Screen
-          name="Center"
-          component={Center}
+          name="CharacterSheet"
+          component={CharacterSheet}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

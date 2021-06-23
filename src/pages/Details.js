@@ -18,7 +18,7 @@ const DetailsScreen = ({navigation}) => {
       />
       <Button
         title="Go to Center"
-        onPress={() => navigation.navigate('Center')}
+        onPress={() => navigation.navigate('CharacterSheet')}
       />
     </View>
   );
