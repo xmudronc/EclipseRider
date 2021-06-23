@@ -1,8 +1,12 @@
-import {View} from 'react-native';
-
 import React from 'react';
 
-import './Center.css';
+import {View, Animated, Easing, Text, TouchableOpacity, Dimensions} from 'react-native';
+
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+
+import CenterStyles from './CenterStyles';
 
 import Left from '../Left/Left';
 import Right from '../Right/Right';
@@ -11,158 +15,153 @@ class Center extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showLeft: false,
-      showRight: false,
-      maximized: sides.none,
+      leftPosition: new Animated.Value(0),
+      rightPosition: new Animated.Value(0),
+    };
+    changeNavigationBarColor('transparent', true);
+  }
+
+  getDimensions() {
+    return {
+      x: Dimensions.get('window').width,
+      y: Dimensions.get('window').height,
     };
   }
 
-  getClassLeft(showLeft, showRight, maximized) {
-    if (maximized === sides.left) {
-      if (showLeft && !showRight) {
-        return 'maximizedLeft';
-      } else if (!showLeft && showRight) {
-        //
-      } else {
-        return 'left minimizeLeft';
-      }
-    } else if (maximized === sides.right) {
-      if (showLeft && !showRight) {
-        //
-      } else if (!showLeft && showRight) {
-        return 'hiddenLeft';
-      } else {
-        return 'left unhideLeft';
-      }
-    } else {
-      if (showLeft && !showRight) {
-        return 'left maximizeLeft';
-      } else if (!showLeft && showRight) {
-        return 'left hideLeft';
-      } else {
-        return 'left';
-      }
-    }
+  maximizeLeft() {
+    Animated.spring(this.state.leftPosition, {
+      toValue: this.getDimensions().x,
+      duration: 1000,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
+    Animated.spring(this.state.rightPosition, {
+      toValue: 100,
+      duration: 1000,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
   }
 
-  getClassRight(showLeft, showRight, maximized) {
-    if (maximized === sides.left) {
-      if (showLeft && !showRight) {
-        return 'hiddenRight';
-      } else if (!showLeft && showRight) {
-        //
-      } else {
-        return 'right unhideRight';
-      }
-    } else if (maximized === sides.right) {
-      if (showLeft && !showRight) {
-        //
-      } else if (!showLeft && showRight) {
-        return 'maximizedRight';
-      } else {
-        return 'right minimizeRight';
-      }
-    } else {
-      if (showLeft && !showRight) {
-        return 'right hideRight';
-      } else if (!showLeft && showRight) {
-        return 'right maximizeRight';
-      } else {
-        return 'right';
-      }
-    }
+  minimizeLeft() {
+    Animated.spring(this.state.leftPosition, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
+    Animated.spring(this.state.rightPosition, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
+  }
+
+  maximizeRight() {
+    Animated.spring(this.state.rightPosition, {
+      toValue: -this.getDimensions().x,
+      duration: 1000,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
+    Animated.spring(this.state.leftPosition, {
+      toValue: -100,
+      duration: 1000,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
+  }
+
+  minimizeRight() {
+    Animated.spring(this.state.rightPosition, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
+    Animated.spring(this.state.leftPosition, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
   }
 
   render() {
-    const showLeft = this.state.showLeft;
-    const showRight = this.state.showRight;
-    const maximized = this.state.maximized;
-
     return (
-      <View style={styles.view}>
-        <div
-          className={this.getClassLeft(showLeft, showRight, maximized)}
-          onAnimationEnd={() => {
-            if (maximized === sides.none) {
-              if (showLeft) {
-                this.setState({maximized: sides.left});
-              }
-            } else if (maximized === sides.left) {
-              if (!showLeft) {
-                this.setState({maximized: sides.none});
-              }
+      <View style={CenterStyles.view}>
+        <Animated.View style={{
+          transform: [
+            {
+              translateX: this.state.leftPosition
             }
-          }}>
-          <div
-            className="leftOverhang shadowLeft"
-            onClick={() =>
-              this.setState({
-                showLeft: true,
-                showRight: false,
-              })
-            }></div>
-          <div
-            className="leftClose"
-            onClick={() =>
-              this.setState({
-                showLeft: false,
-                showRight: false,
-              })
-            }>
-            X
-          </div>
-          <div className="leftContent shadowLeft"></div>
-        </div>
-        <div
-          className={this.getClassRight(showLeft, showRight, maximized)}
-          onAnimationEnd={() => {
-            if (maximized === sides.none) {
-              if (showRight) {
-                this.setState({maximized: sides.right});
-              }
-            } else if (maximized === sides.right) {
-              if (!showRight) {
-                this.setState({maximized: sides.none});
-              }
+          ],
+          width: '110%',
+          height: '100%',
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: '-98%',
+        }}>
+          <TouchableOpacity 
+            style={CenterStyles.leftOverhang}
+            onPress={() => this.maximizeLeft()}>
+            <Text>
+              <Icon name="bag-personal-outline" size={30} color={"#000000"} />
+            </Text>
+          </TouchableOpacity >
+          <TouchableOpacity 
+            style={CenterStyles.leftClose}
+            onPress={() => this.minimizeLeft()}>
+            <Text style={CenterStyles.icon}>
+              <Icon name="arrow-collapse-left" size={30} color={"#000000"} />
+            </Text>
+          </TouchableOpacity >
+          <Animated.View style={CenterStyles.leftHeader}>
+            <Text style={{fontSize: 20}}>Inventory</Text>
+          </Animated.View>
+          <Animated.View style={CenterStyles.leftContent}>
+            <Left></Left>
+          </Animated.View>
+        </Animated.View>
+        <Animated.View style={{
+          transform: [
+            {
+              translateX: this.state.rightPosition
             }
-          }}>
-          <div
-            className="rightOverhang shadowRight"
-            onClick={() =>
-              this.setState({
-                showLeft: false,
-                showRight: true,
-              })
-            }></div>
-          <div
-            className="rightClose"
-            onClick={() =>
-              this.setState({
-                showLeft: false,
-                showRight: false,
-              })
-            }>
-            X
-          </div>
-          <div className="rightContent shadowRight"></div>
-        </div>
+          ],
+          width: '110%',
+          height: '100%',
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          right: '-98%',
+        }}>
+          <TouchableOpacity 
+            style={CenterStyles.rightOverhang}
+            onPress={() => this.maximizeRight()}>
+            <Text>
+              <Icon name="dice-5-outline" size={30} color={"#000000"} />
+            </Text>
+          </TouchableOpacity >
+          <TouchableOpacity 
+            style={CenterStyles.rightClose}
+            onPress={() => this.minimizeRight()}>
+            <Text style={CenterStyles.icon}>
+              <Icon name="arrow-collapse-right" size={30} color={"#000000"} />
+            </Text>
+          </TouchableOpacity >
+          <Animated.View style={CenterStyles.rightHeader}>
+            <Text style={{fontSize: 20}}>Roll Dice</Text>
+          </Animated.View>
+          <Animated.View style={CenterStyles.rightContent}>
+            <Right></Right>
+          </Animated.View>
+        </Animated.View>
       </View>
     );
   }
 }
-
-const styles = {
-  view: {
-    height: '100vh',
-    width: '100vw',
-    overflow: 'hidden',
-  },
-};
-
-const sides = {
-  left: 'left',
-  right: 'right',
-  none: 'none',
-};
 
 export default Center;
