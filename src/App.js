@@ -2,41 +2,43 @@ import 'react-native-gesture-handler';
 
 import React from 'react';
 
-import {StatusBar} from 'react-native';
-
 import {NavigationContainer} from '@react-navigation/native';
 
 import {createStackNavigator} from '@react-navigation/stack';
 
-import HomeScreen from './pages/Home';
+import {useDarkMode} from 'react-native-dynamic'
 
-import DetailsScreen from './pages/Details';
+import List from './pages/List/List';
 
 import CharacterSheet from './pages/CharacterSheet/CharacterSheet';
+
+import Options from './Options';
 
 const Stack = createStackNavigator();
 
 const App = () => {
+  const dark = useDarkMode();
+
   return (
     <NavigationContainer>
-      <StatusBar
-        animated={true}
-        backgroundColor={"rgba(0,0,0,0)"}
-        barStyle={'dark-content'}
-        showHideTransition={'slide'}
-        hidden={false}
-        translucent={true} />
       <Stack.Navigator>
         <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{title: 'Overview'}}
+          name="List"
+          component={List}
+          options={{headerShown: false}}
+          initialParams={{dark: dark}}
         />
-        <Stack.Screen name="Details" component={DetailsScreen} />
         <Stack.Screen
           name="CharacterSheet"
           component={CharacterSheet}
           options={{headerShown: false}}
+          initialParams={{dark: dark}}
+        />
+        <Stack.Screen
+          name="Options"
+          component={Options}
+          options={{headerShown: false}}
+          initialParams={{dark: dark}}
         />
       </Stack.Navigator>
     </NavigationContainer>
