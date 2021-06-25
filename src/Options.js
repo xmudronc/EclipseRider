@@ -1,31 +1,53 @@
-import 'react-native-gesture-handler';
+import React from 'react';
 
-import React, {useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import {useDarkMode} from 'react-native-dynamic'
+import {Switch, View, BackHandler} from 'react-native';
 
-import {Switch, View} from 'react-native';
+class Options extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      toggle: this.props.route.params.mode === 'dark',
+    };
+    BackHandler.addEventListener("hardwareBackPress", () => {
+      this.props.navigation.navigate('List', {
+        refresh: true,
+        mode: this.state.toggle ? 'dark' : 'light',
+      });
+      return true;
+    });
+  }
 
-const Options = () => {
-  //const[dark, setDark] = useState(useDarkMode());
-  const[dark, setDark] = useState(false);
+  getDark() {
+    return this.state.toggle;
+  }
 
-  const toggleSwitch = val => {
-    global.dark = val;
-  };
+  storeData = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
-  return (
-    <View style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <Switch
-            onValueChange={toggleSwitch}
-            value={global.dark}
-        />
-    </View>
-  );
+  render () {
+    return (
+      <View style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <Switch
+              onValueChange={val => {
+                this.setState({toggle: val});
+                this.storeData('dark',  val ? 'dark' : 'light');
+              }}
+              value={this.state.toggle}
+          />
+      </View>
+    );
+  }
 };
 
 export default Options;
